@@ -2,9 +2,9 @@
 
 echo Creating Flutter Project...
 
-cd "C:\Projects Directory" >nul
+cd "C:\Directory" >nul
 
-set org=com.my_company>nul
+set org=com.mycompany>nul
 set /p project_folder=Project folder:
 :: Project Name must be in lowercase and without spaces
 set /p project_name=Project name:

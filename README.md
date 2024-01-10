@@ -14,6 +14,7 @@ Custom scripts for various functions
 - Flutter Launcher Icons
 - Flutter Native Splash
 - Gap
+- Rename App [Only for `PowerShell` version]
 - Get* See [State Management](#state-management)
 
 3. Structure the project folder.
@@ -35,6 +36,7 @@ project_folder
 │   │   │   ├── widgets
 ├── README.md
 ├── .gitignore
+├── .git
 ```
 
 
