@@ -1,8 +1,8 @@
 Write-Host "Creating Flutter Project..."
 
-Set-Location "C:\Directory"
+Set-Location "D:\"
 
-$org = "com.mycompany"
+$org = "com.snow"
 $project_folder = Read-Host "Project folder"
 $project_name = ""
 do {
@@ -14,7 +14,6 @@ do {
 
 $project_description = Read-Host "Project description"
 $is_game = Read-Host "Is a game? [t/f]"
-$localization = Read-Host "Enable Localization? [t/f]"
 
 if ($is_game -eq "t") {
     $org = "$org.game"
@@ -27,34 +26,19 @@ if ($is_game -eq "t") {
 New-Item -ItemType Directory -Path $project_folder -Force | Out-Null
 Set-Location $project_folder
 
-& flutter create $project_name --description="$project_description" -e --platforms="android,web,windows" --org=$org | Out-Null
+& flutter create $project_name --description="$project_description" -e --org=$org | Out-Null
 Write-Host "Flutter project created."
 Set-Location $project_name
 Remove-Item README.md -ErrorAction SilentlyContinue
 Move-Item -Path ".\.gitignore" -Destination "..\"
 
 Write-Host "Adding common flutter packages..."
-& flutter pub add flutter_launcher_icons --dev | Out-Null
+& flutter pub add flutter_launcher_icons flutter_native_splash --dev | Out-Null
 Write-Host "flutter_launcher_icons added."
-& flutter pub add flutter_native_splash --dev | Out-Null
 Write-Host "flutter_native_splash added."
-& flutter pub add rename_app --dev | Out-Null
-Write-Host "rename_app added."
-& flutter pub add gap | Out-Null
-Write-Host "gap added."
-
-if ($localization -eq "t") {
-    & flutter pub add flutter_localizations --sdk=flutter | Out-Null
-    & flutter pub add intl | Out-Null
-    Write-Host "Localization enabled."
-@"
-arb-dir: l10n
-template-arb-file: es.arb
-output-localization-file: app_localizations.dart
-"@ | Out-File l10n.yaml
-    Write-Host "l10n.yaml created."
-    New-Item -ItemType Directory -Path l10n -Force | Out-Null
-}
+Write-Host "logger added."
+& flutter pub add go_router | Out-Null
+Write-Host "go_router added."
 
 $dict = @{
     "1" = "native"
@@ -76,16 +60,16 @@ if ($selected_manager -eq "native") {
     Write-Host "Native state manager selected."
 } else {
     if ($selected_manager -eq "mobx") {
-        & flutter pub add mobx | Out-Null
-        & flutter pub add flutter_mobx | Out-Null
+        & flutter pub add mobx flutter_mobx | Out-Null
+
         & flutter pub add dev:build_runner | Out-Null
         & flutter pub add dev:mobx_codegen | Out-Null
     } elseif ($selected_manager -eq "riverpod") {
-        & flutter pub add flutter_riverpod | Out-Null
-        & flutter pub add riverpod_annotation | Out-Null
-        & flutter pub add dev:riverpod_generator | Out-Null
+        & flutter pub add flutter_riverpod riverpod_annotation | Out-Null
+
         & flutter pub add dev:build_runner | Out-Null
         & flutter pub add dev:custom_lint | Out-Null
+        & flutter pub add dev:riverpod_generator | Out-Null
         & flutter pub add dev:riverpod_lint | Out-Null
     } else {
         # Instalar solo el paquete seleccionado
@@ -94,14 +78,16 @@ if ($selected_manager -eq "native") {
     Write-Host "$selected_manager added."
 }
 
-New-Item -ItemType Directory -Path assets, "assets\icons", "lib\app", "lib\app\modules", "lib\app\routes", "lib\app\widgets" -Force | Out-Null
+New-Item -ItemType Directory -Path assets, "assets\icons", "assets\images", "assets\fonts" -Force | Out-Null
 Write-Host "assets folder structured."
+New-Item -ItemType Directory -Path assets, "lib\config\repository", "lib\config\router", "lib\config\theme", "lib\config\source", "lib\presentation\views", "lib\presentation\providers", "lib\domain\entities", "lib\domain\usecases" -Force | Out-Null
 Write-Host "lib folder structured."
 
 @"
   assets:
     - assets/icons/
 
+#dart run flutter_launcher_icons
 flutter_launcher_icons:
   android: "launcher_icon"
   image_path: "assets/icons/launch-icon.png"
@@ -112,6 +98,7 @@ flutter_launcher_icons:
     generate: true
     image_path: "assets/icons/launch-icon.png"
 
+#dart run flutter_native_splash:create
 flutter_native_splash:
   color: "#ffffff"
   image: "assets/icons/splash-icon.png"
@@ -124,8 +111,6 @@ flutter_native_splash:
 
 & flutter pub get | Out-Null
 Write-Host "pubspec.yaml structured."
-Write-Host "execute dart run flutter_launcher_icons when you add the launch-icon."
-Write-Host "execute dart run flutter_native_splash:create when you add the splash-icon."
 
 Set-Location ..
 
@@ -135,16 +120,6 @@ Set-Location ..
 $project_description
 "@ | Out-File README.md
 Write-Host "README.md created."
-
-@"
-# This files must exists in the root directory
-# but when execute flutter pub get, they will be created inside
-$project_name/.vscode/
-$project_name/.gitignore
-$project_name/README.md
-"@ | Add-Content -Path .gitignore
-
-Write-Host ".gitignore created."
 
 & git init | Out-Null
 
