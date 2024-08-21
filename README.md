@@ -4,51 +4,56 @@ Custom scripts for various functions
 ## Flutter
 ### flutter_create
 #### Description:
-1. Creates a flutter project with the given values:
-- Project folder
+##### Basics
+
+Creates a flutter project with the given values:
+
 - Project name
 - Project type (app, game)
 - Project description
 
-2. Default packages will be added:
-- Flutter Launcher Icons
-- Flutter Native Splash
-- Gap
-- Rename App [Only for `PowerShell` version]
-- Get* See [State Management](#state-management)
+##### Default Packages
 
-3. Structure the project folder.
+- Flutter Launcher Icons --dev dependency: Adds launcher icons to the project.
+- Flutter Native Splash --dev dependency: Adds splash screen to the project.
+- Logger: For logging purposes.
+- Go Router: For routing purposes.
 
-4. Adding a format to the pubspec.yaml file with the needed to add the launcher icons and splash screen.
+(Optional) if is a firebase project, the following common packages will be added:
+- Firebase Core
+- Firebase Auth
+- Firebase Firestore
+- Cloud Firestore
 
-5. Finally, creates default `README.me` and `.gitignore` files and the project will be opened in VSCode.
-
-#### Folder structure (show only relevant folders):
-```
-project_folder
-├── project_name
-│   ├── assets
-|   |   ├── icons
-│   ├── lib
-│   │   ├── app
-│   │   │   ├── modules
-│   │   │   ├── routes
-│   │   │   ├── widgets
-├── README.md
-├── .gitignore
-├── .git
-```
-
-
-
-#### State Management
-If you choose the `PowerShell` version, you will be able to choose the `State Management` package.
+##### State Management
 
 - GetX
 - Provider
 - Bloc
 - MobX
 - Riverpod
+- Native (No state management package)
+
+##### Project Structure
+
+Adds the following folders to the project:
+
+- `assets/icons`
+- `assets/images`
+- `assets/fonts`
+- `lib/models`
+- `lib/screens`
+- `lib/providers`
+- `lib/services`
+- `lib/styles`
+- `lib/widgets`
+
+(Optional) if is a firebase project, the following files will be added:
+
+- `lib/services/cloud_storage_service.dart`
+- `lib/services/database_service.dart`
+
+6. Finally, initializes a git repository in the project folder.
 
 #### Notes
 

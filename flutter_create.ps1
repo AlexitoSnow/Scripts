@@ -3,8 +3,6 @@ Write-Host "Creating Flutter Project..."
 Set-Location "D:\"
 
 $org = "com.snow"
-$project_folder = Read-Host "Project folder"
-$project_name = ""
 do {
     $project_name = Read-Host "Project name"
     if ($project_name -match "\s" -or $project_name -cne $project_name.ToLower()) {
@@ -13,6 +11,10 @@ do {
 } while ($project_name -match "\s" -or $project_name -cne $project_name.ToLower())
 
 $project_description = Read-Host "Project description"
+if ($project_description -eq "") {
+    $project_description = "A new Flutter project."
+}
+
 $is_game = Read-Host "Is a game? [t/f]"
 
 if ($is_game -eq "t") {
@@ -23,22 +25,24 @@ if ($is_game -eq "t") {
     Write-Host "App project selected."
 }
 
-New-Item -ItemType Directory -Path $project_folder -Force | Out-Null
-Set-Location $project_folder
-
 & flutter create $project_name --description="$project_description" -e --org=$org | Out-Null
 Write-Host "Flutter project created."
 Set-Location $project_name
 Remove-Item README.md -ErrorAction SilentlyContinue
-Move-Item -Path ".\.gitignore" -Destination "..\"
 
 Write-Host "Adding common flutter packages..."
 & flutter pub add flutter_launcher_icons flutter_native_splash --dev | Out-Null
 Write-Host "flutter_launcher_icons added."
 Write-Host "flutter_native_splash added."
+& flutter pub add logger go_router | Out-Null
 Write-Host "logger added."
-& flutter pub add go_router | Out-Null
 Write-Host "go_router added."
+
+$is_firebase = Read-Host "Is a firebase project? [t/f]"
+if ($is_firebase -eq "t") {
+    & flutter pub add firebase_core firebase_auth cloud_firestore firebase_storage | Out-Null
+    Write-Host "firebase_core, firebase_auth, cloud_firestore, firebase_storage packages added."
+}
 
 $dict = @{
     "1" = "native"
@@ -80,12 +84,43 @@ if ($selected_manager -eq "native") {
 
 New-Item -ItemType Directory -Path assets, "assets\icons", "assets\images", "assets\fonts" -Force | Out-Null
 Write-Host "assets folder structured."
-New-Item -ItemType Directory -Path assets, "lib\config\repository", "lib\config\router", "lib\config\theme", "lib\config\source", "lib\presentation\views", "lib\presentation\providers", "lib\domain\entities", "lib\domain\usecases" -Force | Out-Null
+New-Item -ItemType Directory -Path assets, "lib\models", "lib\screens", "lib\providers", "lib\services", "lib\styles", "lib\widgets" -Force | Out-Null
 Write-Host "lib folder structured."
+
+if ($is_firebase -eq "t") {
+@"
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class DatabaseService {
+    final FirebaseFirestore _firestore;
+
+    DatabaseService() : _firestore = FirebaseFirestore.instance;
+
+    // Add your database service methods here
+
+}
+"@ | Out-File -Encoding utf8 "lib/services/database_service.dart"
+    Write-Host "database_service.dart created."
+
+@"
+import 'package:firebase_storage/firebase_storage.dart';
+
+class CloudStorageService {
+    final FirebaseStorage _storage;
+
+    CloudStorageService() : _storage = FirebaseStorage.instance;
+
+    // Add your cloud storage service methods here
+
+}
+"@ | Out-File -Encoding utf8 "lib/services/cloud_storage_service.dart"
+    Write-Host "cloud_storage_service.dart created."
+}
 
 @"
   assets:
     - assets/icons/
+    - assets/images/
 
 #dart run flutter_launcher_icons
 flutter_launcher_icons:
@@ -112,10 +147,8 @@ flutter_native_splash:
 & flutter pub get | Out-Null
 Write-Host "pubspec.yaml structured."
 
-Set-Location ..
-
 @"
-# $project_folder
+# $project_name
 ## Description
 $project_description
 "@ | Out-File README.md
