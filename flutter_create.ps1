@@ -1,47 +1,53 @@
-Write-Host "Creating Flutter Project..."
+$SUCCESS_CODE = "Green"
+$INFO_CODE = "Blue"
+Write-Host "Creating Flutter Project..." -ForegroundColor $INFO_CODE
 
 Set-Location "D:\"
 
 $org = "com.snow"
 do {
-    $project_name = Read-Host "Project name"
+Write-Host -NoNewline "Project name: " -ForegroundColor $INFO_CODE
+    $project_name = Read-Host
     if ($project_name -match "\s" -or $project_name -cne $project_name.ToLower()) {
-        Write-Host "Project name should not contain spaces or uppercase letters. Please try again."
+        Write-Host "Project name should not contain spaces or uppercase letters. Please try again." -ForegroundColor "Red"
     }
 } while ($project_name -match "\s" -or $project_name -cne $project_name.ToLower())
 
-$project_description = Read-Host "Project description"
+Write-Host -NoNewline "Project Description: " -ForegroundColor $INFO_CODE
+$project_description = Read-Host
 if ($project_description -eq "") {
     $project_description = "A new Flutter project."
 }
 
-$is_game = Read-Host "Is a game? [t/f]"
+Write-Host -NoNewline "Is a game? [t/f]" -ForegroundColor $INFO_CODE
+$is_game = Read-Host
 
 if ($is_game -eq "t") {
     $org = "$org.game"
-    Write-Host "Game project selected."
+    Write-Host "Game project selected." -ForegroundColor $INFO_CODE
 } else {
     $org = "$org.app"
-    Write-Host "App project selected."
+    Write-Host "App project selected." -ForegroundColor $INFO_CODE
 }
 
 & flutter create $project_name --description="$project_description" -e --org=$org | Out-Null
-Write-Host "Flutter project created."
+Write-Host "Flutter project created." -ForegroundColor $SUCCESS_CODE
 Set-Location $project_name
 Remove-Item README.md -ErrorAction SilentlyContinue
 
-Write-Host "Adding common flutter packages..."
+Write-Host "Adding common flutter packages..." -ForegroundColor $INFO_CODE
 & flutter pub add flutter_launcher_icons flutter_native_splash --dev | Out-Null
-Write-Host "flutter_launcher_icons added."
-Write-Host "flutter_native_splash added."
+Write-Host "flutter_launcher_icons added." -ForegroundColor $SUCCESS_CODE
+Write-Host "flutter_native_splash added." -ForegroundColor $SUCCESS_CODE
 & flutter pub add logger go_router | Out-Null
-Write-Host "logger added."
-Write-Host "go_router added."
+Write-Host "logger added." -ForegroundColor $SUCCESS_CODE
+Write-Host "go_router added." -ForegroundColor $SUCCESS_CODE
 
-$is_firebase = Read-Host "Is a firebase project? [t/f]"
+Write-Host -NoNewline "Is a firebase project? [t/f]" -ForegroundColor $INFO_CODE
+$is_firebase = Read-Host
 if ($is_firebase -eq "t") {
     & flutter pub add firebase_core firebase_auth cloud_firestore firebase_storage | Out-Null
-    Write-Host "firebase_core, firebase_auth, cloud_firestore, firebase_storage packages added."
+    Write-Host "firebase_core, firebase_auth, cloud_firestore, firebase_storage packages added." -ForegroundColor $SUCCESS_CODE
 }
 
 $dict = @{
@@ -61,7 +67,7 @@ $state_manager = $host.ui.PromptForChoice("", $prompt, $options, 0)
 # Puedes usar este índice para acceder al valor correspondiente en tu "diccionario":
 $selected_manager = $dict[($state_manager + 1).ToString()]
 if ($selected_manager -eq "native") {
-    Write-Host "Native state manager selected."
+    Write-Host "Native state manager selected." -ForegroundColor $SUCCESS_CODE
 } else {
     if ($selected_manager -eq "mobx") {
         & flutter pub add mobx flutter_mobx | Out-Null
@@ -79,13 +85,13 @@ if ($selected_manager -eq "native") {
         # Instalar solo el paquete seleccionado
         & flutter pub add $selected_manager | Out-Null
     }
-    Write-Host "$selected_manager added."
+    Write-Host "$selected_manager added." -ForegroundColor $SUCCESS_CODE
 }
 
 New-Item -ItemType Directory -Path assets, "assets\icons", "assets\images", "assets\fonts" -Force | Out-Null
-Write-Host "assets folder structured."
+Write-Host "assets folder structured." -ForegroundColor $INFO_CODE
 New-Item -ItemType Directory -Path assets, "lib\models", "lib\screens", "lib\providers", "lib\services", "lib\styles", "lib\widgets" -Force | Out-Null
-Write-Host "lib folder structured."
+Write-Host "lib folder structured." -ForegroundColor $INFO_CODE
 
 if ($is_firebase -eq "t") {
 @"
@@ -145,7 +151,7 @@ flutter_native_splash:
 "@ | Out-File -Append -Encoding utf8 pubspec.yaml
 
 & flutter pub get | Out-Null
-Write-Host "pubspec.yaml structured."
+Write-Host "pubspec.yaml structured." -ForegroundColor $INFO_CODE
 
 @"
 # $project_name
@@ -156,5 +162,6 @@ Write-Host "README.md created."
 
 & git init | Out-Null
 
-Read-Host "All ready, press any key to open the project..."
+Write-Host -NoNewline "All ready, press any key to open the project..." -ForegroundColor $SUCCESS_CODE
+Read-Host
 & code . | Out-Null
