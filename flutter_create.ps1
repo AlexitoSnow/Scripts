@@ -2,7 +2,20 @@ $SUCCESS_CODE = "Green"
 $INFO_CODE = "Blue"
 Write-Host "Creating Flutter Project..." -ForegroundColor $INFO_CODE
 
-Set-Location "D:\"
+Write-Host -NoNewline "Project location (default: D:\Repositories\): " -ForegroundColor $INFO_CODE
+$project_location = Read-Host
+if ($project_location -eq "") {
+    $project_location = "D:\Repositories\"
+}
+
+if (-Not (Test-Path -Path $project_location)) {
+    New-Item -ItemType Directory -Path $project_location
+    Write-Host "Directory created at $project_location" -ForegroundColor $INFO_CODE
+} else {
+    Write-Host "Directory already exists at $project_location" -ForegroundColor $INFO_CODE
+}
+
+Set-Location $project_location
 
 $org = "com.snow"
 do {
@@ -164,4 +177,4 @@ Write-Host "README.md created."
 
 Write-Host -NoNewline "All ready, press any key to open the project..." -ForegroundColor $SUCCESS_CODE
 Read-Host
-& code . | Out-Null
+& code . --profile Dart | Out-Null
